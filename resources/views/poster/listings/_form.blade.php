@@ -71,7 +71,7 @@
             <x-field name="deadline" type="date" label="Deadline (optional)" :value="$listing->deadline?->format('Y-m-d')"
                 hint="Leave blank if applications stay open." />
             <x-field name="source_url" type="url" label="Official announcement link (optional)" :value="$listing->source_url"
-                placeholder="https://" hint="Where this was announced. Seekers see it as proof." />
+                placeholder="https://" hint="Optional. Leave blank to publish without an announcement link." />
         </div>
     </x-poster.form-section>
 
@@ -281,8 +281,8 @@
 
         {{-- Own form link --}}
         <div x-show="applyMode === 'link'" x-cloak>
-            <x-field name="apply_url" type="url" label="Link to your form" :value="$listing->apply_url"
-                placeholder="https://forms.gle/..." hint="Seekers open this link in a new tab."
+            <x-field name="apply_url" type="url" label="Link to your form (optional)" :value="$listing->apply_url"
+                placeholder="https://forms.gle/..." hint="Leave blank to publish without an application link. You can add it later."
                 x-bind:disabled="applyMode !== 'link'" />
         </div>
 

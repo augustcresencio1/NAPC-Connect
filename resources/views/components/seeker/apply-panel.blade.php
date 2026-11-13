@@ -21,8 +21,12 @@
         @if ($listing->apply_mode === 'form')
             <a href="{{ route('seeker.applications.create', $listing) }}" class="btn-accent w-full">{{ __('Apply now') }}</a>
         @elseif ($listing->apply_mode === 'link')
-            <a href="{{ $listing->apply_url }}" target="_blank" rel="noopener noreferrer" class="btn-accent w-full">{{ __('Open the application form') }}</a>
-            <p class="muted">{{ __('This opens the organization’s own form in a new tab.') }}</p>
+            @if (filled($listing->apply_url))
+                <a href="{{ $listing->apply_url }}" target="_blank" rel="noopener noreferrer" class="btn-accent w-full">{{ __('Open the application form') }}</a>
+                <p class="muted">{{ __('This opens the organization’s own form in a new tab.') }}</p>
+            @else
+                <p class="muted">{{ __('No application link has been provided. Check the listing details for application instructions.') }}</p>
+            @endif
         @endif
 
         @if ($listing->how_to_apply)

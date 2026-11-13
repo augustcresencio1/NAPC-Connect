@@ -55,7 +55,7 @@ class ListingRequest extends FormRequest
             'details.*' => ['nullable', 'string', 'max:1000'],
 
             'apply_mode' => ['required', Rule::in(['form', 'link', 'info'])],
-            'apply_url' => ['required_if:apply_mode,link', 'nullable', 'url:http,https', 'max:500'],
+            'apply_url' => ['nullable', 'url:http,https', 'max:500'],
             'how_to_apply' => ['required_if:apply_mode,info', 'nullable', 'string', 'max:3000'],
 
             'questions' => $isForm ? ['required', 'array', 'min:1', 'max:20'] : ['nullable', 'array'],

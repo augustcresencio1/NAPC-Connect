@@ -225,4 +225,49 @@ class ListingCapacityTest extends TestCase
         ])->assertRedirect();
         $this->assertNull($listing->fresh()->acceptance_limit);
     }
+
+    public static function linklessActions(): array
+    {
+        return ['draft without link' => ['save', null, 'draft'], 'publish without link' => ['publish', '', 'published']];
+    }
+
+    #[DataProvider('linklessActions')]
+    public function test_poster_can_save_or_publish_without_any_link(string $action, ?string $url, string $status): void
+    {
+        $owner = User::factory()->create(['role' => 'poster', 'poster_status' => 'approved']);
+
+        $this->actingAs($owner)->post(route('poster.listings.store'), [
+            ...$this->payload(), 'action' => $action, 'apply_mode' => 'link', 'apply_url' => $url,
+        ])->assertRedirect()->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('listings', ['user_id' => $owner->id, 'status' => $status, 'source_url' => null, 'apply_url' => null]);
+    }
+
+    public function test_poster_can_clear_link_and_seekers_see_no_empty_application_button(): void
+    {
+        $listing = $this->listing();
+        $listing->update(['apply_mode' => 'link', 'apply_url' => 'https://example.com/apply']);
+
+        $this->actingAs($listing->user)->put(route('poster.listings.update', $listing), [
+            ...$this->payload(), 'apply_mode' => 'link', 'apply_url' => '',
+        ])->assertRedirect()->assertSessionHasNoErrors();
+
+        $this->assertNull($listing->fresh()->apply_url);
+        $this->assertSame('published', $listing->fresh()->status);
+        $seeker = User::factory()->create(['role' => 'seeker']);
+        $this->actingAs($seeker)->get(route('seeker.listings.show', $listing))->assertOk()
+            ->assertSee('No application link has been provided.')->assertDontSee('Open the application form')->assertDontSee('href=""', false);
+    }
+
+    public function test_optional_links_still_require_valid_http_or_https_urls_when_supplied(): void
+    {
+        $listing = $this->listing();
+
+        $this->actingAs($listing->user)->putJson(route('poster.listings.update', $listing), [
+            ...$this->payload(), 'apply_mode' => 'link', 'apply_url' => 'javascript:alert(1)', 'source_url' => 'not a url',
+        ])->assertUnprocessable()->assertJsonValidationErrors(['apply_url', 'source_url']);
+
+        $this->assertNull($listing->fresh()->apply_url);
+        $this->assertNull($listing->fresh()->source_url);
+    }
 }
