@@ -3,6 +3,7 @@
 @php $user = auth()->user(); @endphp
 
 <header class="relative border-b-2 border-[var(--navy)] bg-white" x-data="navbar"
+    data-menu-label="{{ __('Menu') }}" data-close-label="{{ __('Close') }}"
     @keydown.escape.window="closeAll()">
     <div class="container-page flex items-center justify-between gap-4 py-4">
 
@@ -11,7 +12,7 @@
             NAPC Connect
         </a>
 
-        <nav class="hidden items-center gap-7 md:flex" aria-label="Main">
+        <nav class="hidden items-center gap-3 lg:flex" aria-label="{{ __('Main') }}">
             @foreach ($links as $link)
                 <a href="{{ $link['href'] }}"
                     class="nav-link {{ !empty($link['active']) ? 'nav-link-active' : '' }}">{{ $link['label'] }}</a>
@@ -19,7 +20,7 @@
         </nav>
 
         {{-- Desktop: account area --}}
-        <div class="hidden items-center gap-3 md:flex">
+        <div class="hidden items-center gap-3 lg:flex">
             @auth
                 <div class="relative" @click.outside="closeUser()">
                     <button type="button" class="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-[var(--mist)]"
@@ -45,29 +46,29 @@
                             </div>
                         </div>
                         <hr class="my-1 border-[var(--mist)]">
-                        <a href="{{ route($user->homeRoute()) }}" class="menu-item" role="menuitem">My home</a>
+                        <a href="{{ route($user->homeRoute()) }}" class="menu-item" role="menuitem">{{ __('My home') }}</a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button type="submit" class="menu-item" role="menuitem">Log out</button>
+                            <button type="submit" class="menu-item" role="menuitem">{{ __('Log out') }}</button>
                         </form>
                     </div>
                 </div>
             @else
-                <a href="{{ route('login') }}" class="btn-ghost px-3 py-2 text-[15px]">Log in</a>
-                <a href="{{ route('register') }}" class="btn-primary px-5 py-2.5 text-[15px]">Sign up</a>
+                <a href="{{ route('login') }}" class="btn-ghost px-3 py-2 text-[15px]">{{ __('Log in') }}</a>
+                <a href="{{ route('register') }}" class="btn-primary px-5 py-2.5 text-[15px]">{{ __('Sign up') }}</a>
             @endauth
         </div>
 
         {{-- Mobile: menu button --}}
-        <button type="button" class="rounded-lg bg-[var(--mist)] px-4 py-2 font-bold md:hidden" @click="toggleMenu()"
+        <button type="button" class="rounded-lg bg-[var(--mist)] px-4 py-2 font-bold lg:hidden" @click="toggleMenu()"
             :aria-expanded="menuOpen" aria-controls="mobile-menu">
-            <span x-text="menuLabel">Menu</span>
+            <span x-text="menuLabel">{{ __('Menu') }}</span>
         </button>
     </div>
 
     {{-- Mobile panel --}}
     <div id="mobile-menu" x-show="menuOpen" x-cloak
-        class="container-page border-t-2 border-[var(--mist)] pb-5 md:hidden">
+        class="container-page border-t-2 border-[var(--mist)] pb-5 lg:hidden">
         @auth
             <div class="flex items-center gap-3 py-4">
                 <span class="avatar">{{ mb_strtoupper(mb_substr($user->first_name, 0, 1)) }}</span>
@@ -93,12 +94,15 @@
             @auth
                 <form method="POST" action="{{ route('logout') }}" class="mt-2">
                     @csrf
-                    <button type="submit" class="btn-primary w-full">Log out</button>
+                    <button type="submit" class="btn-primary w-full">{{ __('Log out') }}</button>
                 </form>
             @else
-                <a href="{{ route('login') }}" class="py-2">Log in</a>
-                <a href="{{ route('register') }}" class="btn-primary mt-2">Sign up</a>
+                <a href="{{ route('login') }}" class="py-2">{{ __('Log in') }}</a>
+                <a href="{{ route('register') }}" class="btn-primary mt-2">{{ __('Sign up') }}</a>
             @endauth
         </div>
     </div>
+    @if ($user?->role === 'seeker')
+        <div class="container-page"><x-seeker.preferences /></div>
+    @endif
 </header>

@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
@@ -36,6 +36,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'ui_preferences' => 'array',
         ];
     }
 
@@ -55,18 +56,18 @@ class User extends Authenticatable
     public function homeRoute(): string
     {
         return match ($this->role) {
-            'admin'  => 'admin.home',
+            'admin' => 'admin.home',
             'poster' => 'poster.home',
-            default  => 'seeker.home',
+            default => 'seeker.home',
         };
     }
 
     public function roleLabel(): string
     {
         return match ($this->role) {
-            'admin'  => 'Admin',
+            'admin' => 'Admin',
             'poster' => 'Organization',
-            default  => 'Seeker',
+            default => 'Seeker',
         };
     }
 

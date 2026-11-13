@@ -4,7 +4,7 @@ export default function (Alpine) {
         userOpen: false,
 
         get menuLabel() {
-            return this.menuOpen ? 'Close' : 'Menu';
+            return this.menuOpen ? (this.$el.dataset.closeLabel || 'Close') : (this.$el.dataset.menuLabel || 'Menu');
         },
 
         toggleMenu() {

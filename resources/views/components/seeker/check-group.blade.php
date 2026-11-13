@@ -6,17 +6,17 @@
 @endphp
 
 <fieldset>
-    <legend class="label">{{ $label }}</legend>
+    <legend class="label">{{ __($label) }}</legend>
     <div class="check-grid">
         @foreach ($options as $value => $text)
             <label class="check-item">
                 <input type="checkbox" name="{{ $name }}[]" value="{{ $value }}"
                     @checked(in_array($value, $selected, true))>
-                <span>{{ $text }}</span>
+                <span>{{ __($text) }}</span>
             </label>
         @endforeach
     </div>
     @if ($hint)
-        <p class="muted mt-2">{{ $hint }}</p>
+        <p class="muted mt-2">{{ __($hint) }}</p>
     @endif
 </fieldset>

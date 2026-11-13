@@ -200,6 +200,13 @@
             </div>
         </fieldset>
 
+        <div x-show="applyMode === 'form'" x-cloak>
+            <x-field name="acceptance_limit" type="number" label="Maximum accepted applicants (optional)"
+                :value="$listing->acceptance_limit" min="1" max="1000000" step="1"
+                x-bind:disabled="applyMode !== 'form'"
+                hint="Leave blank for no limit. Only accepted applicants use a slot; pending applications do not. Seekers see the remaining slots live." />
+        </div>
+
         {{-- Question builder (only when using an NAPC Connect form) --}}
         <template x-if="applyMode === 'form'">
             <div x-data="questionBuilder" class="space-y-4" data-initial="{{ json_encode($questions) }}"

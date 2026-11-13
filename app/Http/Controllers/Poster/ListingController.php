@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Poster\ListingRequest;
 use App\Models\Listing;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class ListingController extends Controller
 {
@@ -21,8 +23,8 @@ class ListingController extends Controller
 
         $listings = $user->listings()
             ->withCount('applications')
-            ->when($status !== 'all', fn($q) => $q->where('status', $status))
-            ->when($search !== '', fn($q) => $q->where('title', 'ilike', '%' . addcslashes($search, '%_\\') . '%'))
+            ->when($status !== 'all', fn ($q) => $q->where('status', $status))
+            ->when($search !== '', fn ($q) => $q->where('title', 'ilike', '%'.addcslashes($search, '%_\\').'%'))
             ->latest('updated_at')
             ->paginate(8)
             ->withQueryString();
@@ -33,9 +35,9 @@ class ListingController extends Controller
             ->pluck('total', 'status');
 
         $counts = [
-            'draft'     => (int) ($byStatus['draft'] ?? 0),
+            'draft' => (int) ($byStatus['draft'] ?? 0),
             'published' => (int) ($byStatus['published'] ?? 0),
-            'closed'    => (int) ($byStatus['closed'] ?? 0),
+            'closed' => (int) ($byStatus['closed'] ?? 0),
         ];
         $counts['all'] = array_sum($counts);
 
@@ -79,7 +81,15 @@ class ListingController extends Controller
             return back()->withInput()->with('warning', 'An admin took this listing down. You can edit it, but it cannot be published until the admin restores it.');
         }
 
-        $listing->update($request->payload() + $this->statusFields($request, $listing));
+        DB::transaction(function () use ($request, $listing): void {
+            $locked = Listing::query()->whereKey($listing->id)->lockForUpdate()->firstOrFail();
+            $this->owned($request, $locked);
+            $payload = $request->payload();
+            if ($payload['acceptance_limit'] !== null && $payload['acceptance_limit'] < $locked->acceptedApplications()->count()) {
+                throw ValidationException::withMessages(['acceptance_limit' => 'The acceptance limit cannot be lower than the number of accepted applicants.']);
+            }
+            $locked->update($payload + $this->statusFields($request, $locked));
+        }, 3);
 
         return redirect()
             ->route('poster.listings.index')
@@ -104,14 +114,14 @@ class ListingController extends Controller
         }
 
         $listing->update([
-            'status'       => $data['status'],
+            'status' => $data['status'],
             'published_at' => $data['status'] === 'published' ? ($listing->published_at ?? now()) : $listing->published_at,
         ]);
 
         return back()->with('status', match ($data['status']) {
             'published' => "“{$listing->title}” is now live.",
-            'closed'    => "“{$listing->title}” was closed.",
-            default     => "“{$listing->title}” was moved to drafts.",
+            'closed' => "“{$listing->title}” was closed.",
+            default => "“{$listing->title}” was moved to drafts.",
         });
     }
 

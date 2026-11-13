@@ -1,0 +1,36 @@
+.seeker-tools-page { display: grid; gap: 1.5rem; padding-top: 2.5rem; padding-bottom: 2.5rem; }
+.slot-availability { padding: .75rem 1rem; margin-top: 1rem; background: var(--mist); border: 1px solid var(--navy); border-radius: .6rem; }
+.slot-availability > p { margin: 0; }
+.listing-grid { display: grid; gap: 1.5rem; }
+.listing-card-heading, .seeker-actions { display: flex; align-items: center; flex-wrap: wrap; gap: .75rem; }
+.listing-card-heading { justify-content: space-between; }
+.bookmark-button { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; min-height: 44px; padding: .5rem .75rem; border: 2px solid var(--navy); border-radius: .6rem; color: var(--navy); font-weight: 700; background: var(--paper); }
+.bookmark-button svg { width: 1.25rem; height: 1.25rem; stroke: currentColor; stroke-width: 1.8; fill: none; }
+.bookmark-button[aria-pressed="true"] { background: var(--mist); }
+.bookmark-button[aria-pressed="true"] svg { fill: currentColor; }
+.document-checklist { display: grid; gap: .75rem; border: 2px solid var(--navy); }
+.document-checklist fieldset { margin: 1rem 0; }
+.document-check-item { display: flex; align-items: start; gap: .75rem; padding: .75rem 0; }
+.document-check-item input { width: 1.4rem; height: 1.4rem; flex-shrink: 0; accent-color: var(--navy); }
+.document-check-item:has(input:checked) span { text-decoration: line-through; }
+.application-tracker { margin-top: 1.5rem; }
+.application-timeline { list-style: none; padding-left: 1rem; border-left: 3px solid var(--navy); }
+.application-timeline li { display: grid; gap: .2rem; padding: .5rem 0 .75rem 1rem; position: relative; }
+.application-timeline li::before { content: ''; position: absolute; width: .65rem; height: .65rem; border-radius: 50%; background: var(--navy); left: -1.42rem; top: .85rem; }
+.application-timeline time { font-size: .875rem; color: var(--ink); }
+.reminder-card { display: grid; gap: .75rem; }
+.ui-preferences { padding: .75rem 0; border-top: 1px solid var(--navy); }
+.ui-preferences summary { cursor: pointer; font-weight: 700; padding: .5rem 0; }
+.preferences-form { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; padding: .75rem 0; }
+.preferences-form .input { width: auto; min-width: 8rem; }
+.preferences-form label { display: flex; gap: .5rem; align-items: center; }
+.preferences-form input[type=checkbox] { width: 1.25rem; height: 1.25rem; }
+html.large-text { font-size: 20px; }
+html.high-contrast { --navy: #001b44; --mist: #fff; --paper: #fff; --ink: #000; --sky: #003799; --leaf: #006431; --coral: #a32600; }
+html.high-contrast body { color: #000; background: #fff; }
+html.high-contrast .muted, html.high-contrast .lead { color: #111; opacity: 1; }
+html.high-contrast a { text-decoration: underline; text-underline-offset: .2em; }
+html.high-contrast :is(.card-lg, .input, .chip, .chip-active, .alert) { border: 2px solid #000; }
+html.high-contrast :is(.btn-primary, .btn-accent, .btn-danger, .chip-active) { background: #001b44; color: #fff; border: 2px solid #001b44; }
+html.high-contrast :focus-visible { outline: 4px solid #000; outline-offset: 4px; }
+@media (min-width: 768px) { .listing-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

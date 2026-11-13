@@ -1,23 +1,27 @@
 @extends('layouts.app')
-@section('title', 'Browse listings · NAPC Connect')
+@section('title', __('Browse listings') . ' | NAPC Connect')
 
 @section('navbar')
     <x-navbar.seeker />
 @endsection
 
 @php
-    $options = ['all' => 'All (' . $counts['all'] . ')'];
+    $options = ['all' => __('All') . ' (' . $counts['all'] . ')'];
     foreach (config('napc.types') as $key => $label) {
-        $options[$key] = $label . ' (' . $counts[$key] . ')';
+        $options[$key] = __($label) . ' (' . $counts[$key] . ')';
     }
 
-    $hasFilters = $search !== '' || $region !== '' || $sort !== 'latest';
+    $hasFilters = $search !== '' || $region !== '' || $sort !== 'relevance';
 @endphp
 
 @section('content')
-    <x-page-header title="Browse listings" subtitle="Ayuda, scholarships, jobs and training you can apply for." />
+    <x-page-header :title="__('Browse listings')" :subtitle="__('Ayuda, scholarships, jobs and training you can apply for.')" />
 
     <div class="container-page space-y-6 py-10">
+
+        @unless (auth()->user()->seekerProfile)
+            <x-alert type="warning">{{ __('You are seeing listings open to everyone.') }} <a href="{{ route('seeker.profile.edit') }}" class="font-bold underline">{{ __('Complete your profile') }}</a> {{ __('to see more matches.') }}</x-alert>
+        @endunless
 
         <x-filter-tabs :options="$options" :current="$type" param="type" />
 
@@ -29,7 +33,7 @@
             {{-- Search and sort --}}
             <div class="browse-filter">
                 <div>
-                    <label for="q" class="label">Search</label>
+                    <label for="q" class="label">{{ __('Search') }}</label>
                     <div class="relative">
                         <svg class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--navy)]"
                             width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -38,42 +42,43 @@
                             <path d="m20 20-3.5-3.5" />
                         </svg>
                         <input id="q" type="search" name="q" value="{{ $search }}"
-                            class="input !bg-none !pl-12" placeholder="Title or keyword">
+                            class="input !bg-none !pl-12" placeholder="{{ __('Title or keyword') }}">
                     </div>
                 </div>
 
                 <div>
-                    <label for="sort" class="label">Sort by</label>
+                    <label for="sort" class="label">{{ __('Sort by') }}</label>
                     <select id="sort" name="sort" class="input">
-                        <option value="latest" @selected($sort === 'latest')>Newest</option>
-                        <option value="deadline" @selected($sort === 'deadline')>Deadline soonest</option>
+                        <option value="relevance" @selected($sort === 'relevance')>{{ __('Best matches') }}</option>
+                        <option value="latest" @selected($sort === 'latest')>{{ __('Newest') }}</option>
+                        <option value="deadline" @selected($sort === 'deadline')>{{ __('Deadline soonest') }}</option>
                     </select>
                 </div>
             </div>
 
             {{-- Location --}}
             <x-location-picker :region="$region" :province="$province" :city="$city" :columns="3" region-label="Region"
-                region-placeholder="Anywhere in the Philippines" province-placeholder="Any province"
-                city-label="City or municipality" city-placeholder="Any city or municipality" />
+                :region-placeholder="__('Anywhere in the Philippines')" :province-placeholder="__('Any province')"
+                :city-label="__('City or municipality')" :city-placeholder="__('Any city or municipality')" />
 
             {{-- Buttons --}}
             <div class="filter-actions">
                 @if ($hasFilters)
                     <a href="{{ route('seeker.listings.index', $type !== 'all' ? ['type' => $type] : []) }}"
-                        class="btn-ghost border-2 border-[var(--navy)]">Clear</a>
+                        class="btn-ghost border-2 border-[var(--navy)]">{{ __('Clear') }}</a>
                 @endif
-                <button type="submit" class="btn-primary">Search</button>
+                <button type="submit" class="btn-primary">{{ __('Search') }}</button>
             </div>
         </form>
 
         {{-- Result count --}}
         <p class="muted font-semibold">
-            {{ $listings->total() }} {{ \Illuminate\Support\Str::plural('listing', $listings->total()) }}
+            {{ __(':count listings', ['count' => $listings->total()]) }}
             @if ($search !== '')
-                for “{{ $search }}”
+                {{ __('for :search', ['search' => $search]) }}
             @endif
             @if ($area)
-                for {{ $area }} (including nationwide and wider-area listings)
+                {{ __('for :area (including nationwide and wider-area listings)', ['area' => $area]) }}
             @endif
         </p>
 
@@ -83,11 +88,11 @@
                 <x-seeker.listing-card :listing="$listing" />
             @empty
                 <div class="md:col-span-2">
-                    <x-empty-state title="Nothing found">
+                    <x-empty-state :title="__('Nothing found')">
                         @if ($hasFilters || $type !== 'all')
-                            Try another category, a different keyword, or clear the filters.
+                            {{ __('Try another category, a different keyword, or clear the filters.') }}
                         @else
-                            No listings are open right now. Please check back soon.
+                            {{ __('No listings are open right now. Please check back soon.') }}
                         @endif
                     </x-empty-state>
                 </div>

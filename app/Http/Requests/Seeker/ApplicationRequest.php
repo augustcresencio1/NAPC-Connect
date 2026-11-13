@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Seeker;
 
 use App\Models\Listing;
+use App\Services\RecommendationService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -10,7 +11,12 @@ class ApplicationRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->role === 'seeker';
+        $listing = $this->route('listing');
+        abort_unless($this->user()?->role === 'seeker' && $listing instanceof Listing
+            && $listing->status === 'published'
+            && app(RecommendationService::class)->visibleTo($this->user())->whereKey($listing->id)->exists(), 404);
+
+        return true;
     }
 
     /** Rules are built from the questions the organization created. */
@@ -58,7 +64,7 @@ class ApplicationRequest extends FormRequest
     public function attributes(): array
     {
         return collect($this->questions())
-            ->mapWithKeys(fn($q) => ["answers.{$q['key']}" => '“' . $q['label'] . '”'])
+            ->mapWithKeys(fn ($q) => ["answers.{$q['key']}" => '“'.$q['label'].'”'])
             ->all();
     }
 
@@ -72,7 +78,7 @@ class ApplicationRequest extends FormRequest
             $value = $input[$q['key']] ?? null;
 
             if (is_array($value)) {
-                $value = array_values(array_unique(array_filter($value, fn($v) => trim((string) $v) !== '')));
+                $value = array_values(array_unique(array_filter($value, fn ($v) => trim((string) $v) !== '')));
                 $value = $value ?: null;
             } else {
                 $value = trim((string) $value);

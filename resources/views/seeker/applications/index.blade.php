@@ -1,14 +1,14 @@
 @extends('layouts.app')
-@section('title', 'My applications · NAPC Connect')
+@section('title', __('My applications') . ' | NAPC Connect')
 
 @section('navbar')
     <x-navbar.seeker />
 @endsection
 
 @section('content')
-    <x-page-header title="My applications" subtitle="Everything you applied for through NAPC Connect.">
+    <x-page-header :title="__('My applications')" :subtitle="__('Everything you applied for through NAPC Connect.')">
         <x-slot:actions>
-            <a href="{{ route('seeker.listings.index') }}" class="btn-accent">Browse listings</a>
+            <a href="{{ route('seeker.listings.index') }}" class="btn-accent">{{ __('Browse listings') }}</a>
         </x-slot:actions>
     </x-page-header>
 
@@ -40,25 +40,37 @@
 
                     <dl class="detail-list mt-4">
                         <div>
-                            <dt>Applied on</dt>
+                            <dt>{{ __('Applied on') }}</dt>
                             <dd>{{ $application->created_at->format('M j, Y') }}</dd>
                         </div>
                         <div>
-                            <dt>Listing</dt>
-                            <dd>{{ $listing->status === 'published' && !$listing->isExpired() ? 'Still open' : 'Closed' }}
+                            <dt>{{ __('Listing') }}</dt>
+                            <dd>{{ __($listing->status === 'published' && !$listing->isExpired() ? 'Still open' : 'Closed') }}
                             </dd>
                         </div>
                     </dl>
 
-                    <div class="mt-6">
+                    <x-seeker.application-timeline :application="$application" />
+
+                    <div class="mt-6 seeker-actions">
+                        @if ($application->status === 'pending')
+                            <form method="POST" action="{{ route('seeker.applications.withdraw', $application) }}"
+                                x-data="confirmForm" data-confirm="{{ __('Withdraw this application? This cannot be undone.') }}" @submit="submit($event)">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="btn-danger btn-sm">{{ __('Withdraw application') }}</button>
+                            </form>
+                        @endif
+                        @if ($listing->apply_mode === 'form' && $application->hasTicket())
+                            <a href="{{ route('seeker.applications.ticket', $application) }}"
+                                class="btn-primary btn-sm">{{ __('Download ticket (PDF)') }}</a>
+                        @endif
                         <a href="{{ route('seeker.listings.show', $listing) }}"
-                            class="btn-ghost btn-sm border-2 border-[var(--navy)]">View listing</a>
+                            class="btn-ghost btn-sm border-2 border-[var(--navy)]">{{ __('View listing') }}</a>
                     </div>
                 </article>
             @empty
-                <x-empty-state title="No applications yet">
-                    Applications you send through an NAPC Connect form show up here.
-                </x-empty-state>
+                <x-empty-state :title="__('No applications yet')">{{ __('Applications you send through an NAPC Connect form show up here.') }}</x-empty-state>
             @endforelse
         </div>
 

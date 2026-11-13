@@ -14,6 +14,8 @@ class EnsureApprovedPoster
         $user = $request->user();
 
         if ($user && $user->role === 'poster' && $user->poster_status !== 'approved') {
+            abort_if($request->routeIs('poster.listings.applications', 'poster.applications.*'), 404);
+
             return redirect()
                 ->route('poster.home')
                 ->with('warning', 'Your organization must be approved before you can post listings.');

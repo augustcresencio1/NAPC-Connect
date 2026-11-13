@@ -1,15 +1,14 @@
 @extends('layouts.app')
-@section('title', 'Apply · NAPC Connect')
+@section('title', __('Apply') . ' | NAPC Connect')
 
 @section('navbar')
     <x-navbar.seeker />
 @endsection
 
 @section('content')
-    <x-page-header title="Apply" :subtitle="$listing->title">
+    <x-page-header :title="__('Apply')" :subtitle="$listing->title">
         <x-slot:actions>
-            <a href="{{ route('seeker.listings.show', $listing) }}" class="btn-ghost border-2 border-[var(--navy)]">Back to
-                listing</a>
+            <a href="{{ route('seeker.listings.show', $listing) }}" class="btn-ghost border-2 border-[var(--navy)]">{{ __('Back to listing') }}</a>
         </x-slot:actions>
     </x-page-header>
 
@@ -20,7 +19,7 @@
 
                 @if ($errors->any())
                     <x-alert type="danger">
-                        <p class="font-extrabold">Please fix these first:</p>
+                        <p class="font-extrabold">{{ __('Please fix these first:') }}</p>
                         <ul class="mt-2 list-disc space-y-1 pl-5">
                             @foreach ($errors->all() as $message)
                                 <li>{{ $message }}</li>
@@ -30,24 +29,24 @@
                 @endif
 
                 {{-- 1. YOUR DETAILS --}}
-                <x-seeker.form-section number="1" title="Your details"
-                    hint="The organization sees these, together with the profile details you filled in and your answers.">
+                <x-seeker.form-section number="1" :title="__('Your details')"
+                    :hint="__('The organization sees these, together with the profile details you filled in and your answers.')">
                     <dl class="detail-list">
                         <div>
-                            <dt>Name</dt>
+                            <dt>{{ __('Name') }}</dt>
                             <dd>{{ auth()->user()->name }}</dd>
                         </div>
                         <div>
-                            <dt>Email</dt>
+                            <dt>{{ __('Email') }}</dt>
                             <dd>{{ auth()->user()->email }}</dd>
                         </div>
                     </dl>
-                    <p class="muted">Something outdated? <a href="{{ route('seeker.profile.edit') }}"
-                            class="font-bold underline">Update your profile</a> first, then come back.</p>
+                    <p class="muted">{{ __('Something outdated?') }} <a href="{{ route('seeker.profile.edit') }}"
+                            class="font-bold underline">{{ __('Update your profile') }}</a> {{ __('first, then come back.') }}</p>
                 </x-seeker.form-section>
 
                 {{-- 2. QUESTIONS --}}
-                <x-seeker.form-section number="2" title="Questions" hint="Fields marked with * are required.">
+                <x-seeker.form-section number="2" :title="__('Questions')" :hint="__('Fields marked with * are required.')">
 
                     @forelse ($listing->application_form ?? [] as $q)
                         @php
@@ -94,7 +93,7 @@
                                     <textarea id="{{ $id }}" name="{{ $name }}" rows="5" maxlength="3000" class="input">{{ $value }}</textarea>
                                 @elseif ($q['type'] === 'select')
                                     <select id="{{ $id }}" name="{{ $name }}" class="input">
-                                        <option value="">Choose one</option>
+                                        <option value="">{{ __('Choose one') }}</option>
                                         @foreach ($q['options'] ?? [] as $option)
                                             <option value="{{ $option }}" @selected($value === $option)>
                                                 {{ $option }}</option>
@@ -117,13 +116,13 @@
                             </div>
                         @endif
                     @empty
-                        <p class="muted">This listing has no extra questions. Just send your application.</p>
+                        <p class="muted">{{ __('This listing has no extra questions. Just send your application.') }}</p>
                     @endforelse
                 </x-seeker.form-section>
 
                 <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <a href="{{ route('seeker.listings.show', $listing) }}" class="btn-ghost">Cancel</a>
-                    <button type="submit" class="btn-accent">Send application</button>
+                    <a href="{{ route('seeker.listings.show', $listing) }}" class="btn-ghost">{{ __('Cancel') }}</a>
+                    <button type="submit" class="btn-accent">{{ __('Send application') }}</button>
                 </div>
             </form>
         </div>

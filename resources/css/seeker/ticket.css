@@ -1,0 +1,24 @@
+@page { margin: 36pt; }
+body { font-family: 'DejaVu Sans', sans-serif; font-size: 10pt; color: #1b2437; line-height: 1.5; }
+h1, h2, h3, p { margin: 0; }
+h1 { font-size: 26pt; line-height: 1.2; margin: 7pt 0; }
+h2 { font-size: 17pt; line-height: 1.35; color: #0f2a5c; overflow-wrap: break-word; }
+.header { background: #0f2a5c; color: #fff; padding: 24pt; }
+.brand { font-size: 10pt; font-weight: bold; letter-spacing: 2pt; margin-bottom: 20pt; }
+.eyebrow { font-size: 8pt; font-weight: bold; letter-spacing: 1pt; }
+.listing { background: #eef3fa; padding: 20pt 24pt; }
+.listing h2 { margin: 5pt 0; }
+.organization { font-size: 11pt; }
+.identity { width: 100%; border-collapse: collapse; margin: 22pt 0; table-layout: fixed; }
+.identity td { vertical-align: middle; }
+.person { width: 68%; padding-right: 12pt; }
+.person h2 { margin-top: 5pt; }
+.qr { width: 32%; text-align: right; }
+.qr img { width: 132pt; height: 132pt; }
+.code-label { margin-top: 15pt; }
+.ticket-code { font-family: 'DejaVu Sans Mono', monospace; font-size: 8pt; margin-top: 4pt; }
+.accepted { color: #526078; font-size: 9pt; margin-top: 8pt; }
+.event-detail { border-top: 1pt solid #d9e0ec; padding: 12pt 0; }
+.event-detail h3 { font-size: 10pt; color: #0f2a5c; margin-bottom: 4pt; }
+.event-detail p { white-space: pre-line; overflow-wrap: break-word; }
+.footer { border-top: 2pt solid #0f2a5c; padding-top: 12pt; margin-top: 18pt; color: #526078; font-size: 8pt; }

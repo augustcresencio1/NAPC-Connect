@@ -4,12 +4,23 @@ namespace App\Http\Controllers\Seeker;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Seeker\ApplicationRequest;
+use App\Models\Application;
 use App\Models\Listing;
+use App\Services\RecommendationService;
+use App\Services\TicketService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class ApplicationController extends Controller
 {
+    public function withdraw(Request $request, Application $application, TicketService $tickets): RedirectResponse
+    {
+        abort_unless((int) $application->user_id === (int) $request->user()->id, 404);
+        $tickets->withdraw($application);
+
+        return back()->with('status', __('Application withdrawn.'));
+    }
+
     /** My applications */
     public function index(Request $request)
     {
@@ -44,7 +55,7 @@ class ApplicationController extends Controller
         // firstOrCreate stops a double click from sending two applications
         $application = $listing->applications()->firstOrCreate(
             ['user_id' => $request->user()->id],
-            ['answers' => $request->answers(), 'status' => 'submitted'],
+            ['answers' => $request->answers(), 'status' => 'pending'],
         );
 
         if (! $application->wasRecentlyCreated) {
@@ -55,13 +66,14 @@ class ApplicationController extends Controller
 
         return redirect()
             ->route('seeker.applications.index')
-            ->with('status', "Your application for “{$listing->title}” was sent.");
+            ->with('status', __('Your application for :title was sent.', ['title' => $listing->title]));
     }
 
     /** Only open listings that use an NAPC Connect form, once per seeker. */
     private function blocked(Request $request, Listing $listing): ?RedirectResponse
     {
-        abort_unless($listing->status === 'published', 404);
+        abort_unless($listing->status === 'published'
+            && app(RecommendationService::class)->visibleTo($request->user())->whereKey($listing->id)->exists(), 404);
 
         $back = redirect()->route('seeker.listings.show', $listing);
 
@@ -70,11 +82,11 @@ class ApplicationController extends Controller
         }
 
         if ($listing->isExpired()) {
-            return $back->with('warning', 'The deadline for this listing has passed.');
+            return $back->with('warning', __('The deadline for this listing has passed.'));
         }
 
         if ($listing->applications()->where('user_id', $request->user()->id)->exists()) {
-            return $back->with('warning', 'You already applied to this listing.');
+            return $back->with('warning', __('You already applied to this listing.'));
         }
 
         return null;

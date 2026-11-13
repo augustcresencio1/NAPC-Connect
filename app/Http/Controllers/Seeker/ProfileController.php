@@ -12,7 +12,7 @@ class ProfileController extends Controller
     public function edit(Request $request)
     {
         return view('seeker.profile.edit', [
-            'profile' => $request->user()->seekerProfile ?? new SeekerProfile(),
+            'profile' => $request->user()->seekerProfile ?? new SeekerProfile,
         ]);
     }
 
@@ -22,6 +22,6 @@ class ProfileController extends Controller
 
         return redirect()
             ->route('seeker.home')
-            ->with('status', 'Your profile was saved.');
+            ->with('status', __('Your profile was saved.'));
     }
 }

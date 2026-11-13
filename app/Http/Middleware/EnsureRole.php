@@ -20,6 +20,8 @@ class EnsureRole
         }
 
         if (! in_array($user->role, $roles, true)) {
+            abort_if($request->routeIs('seeker.*', 'poster.listings.applications', 'poster.applications.*'), 404);
+
             // Send people to their own home instead of showing an error page
             return redirect()->route($user->homeRoute());
         }

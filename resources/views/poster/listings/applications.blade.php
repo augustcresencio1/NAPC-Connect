@@ -5,6 +5,15 @@
     <x-navbar.poster />
 @endsection
 
+@php
+    $statusOptions = [
+        'pending' => 'Pending (' . $counts['pending'] . ')',
+        'accepted' => 'Accepted (' . $counts['accepted'] . ')',
+        'rejected' => 'Rejected (' . $counts['rejected'] . ')',
+        'withdrawn' => 'Withdrawn (' . $counts['withdrawn'] . ')',
+    ];
+@endphp
+
 @section('content')
     <x-page-header title="Applicants" :subtitle="$listing->title">
         <x-slot:actions>
@@ -16,6 +25,22 @@
     </x-page-header>
 
     <div class="container-page space-y-6 py-10">
+
+        @if ($errors->has('status'))
+            <x-alert type="danger">{{ $errors->first('status') }}</x-alert>
+        @endif
+
+        @if ($listing->apply_mode === 'form')
+            @php $availability = $listing->availability(); @endphp
+            <p class="muted font-semibold">{{ $availability['label'] }} · {{ $availability['accepted'] }} accepted</p>
+            @if ($availability['remaining'] === 0)
+                <p class="muted">All slots are filled. Edit the listing to increase its limit, or move an accepted application back to pending to free a slot.</p>
+            @endif
+            <div class="applicant-toolbar">
+                <x-filter-tabs :options="$statusOptions" :current="$status" />
+                <a href="{{ route('poster.applications.export', $listing) }}" class="btn-primary btn-sm">Download accepted (CSV)</a>
+            </div>
+        @endif
 
         @if ($listing->apply_mode === 'link')
             <x-alert type="warning">This listing sends applicants to your own form, so their answers are not stored
@@ -35,6 +60,15 @@
             @endphp
 
             <article class="card-lg border-2 border-[var(--navy)]">
+                <span class="badge-muted">{{ $application->status === 'rejected' ? 'Rejected' : $application->statusLabel() }}</span>
+                @php $match = $matchScores->get($application->id); @endphp
+                <p class="label">
+                    @if ((int) $match->requirement_count === 0)
+                        Open to everyone — no targeting requirements set
+                    @else
+                        Matches {{ $match->match_score }} of {{ $match->requirement_count }} requirements
+                    @endif
+                </p>
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div class="flex min-w-0 items-center gap-3">
                         <span
@@ -72,10 +106,38 @@
                         @endforeach
                     </dl>
                 @endif
+
+                @if ($listing->apply_mode === 'form' && $application->status !== 'withdrawn')
+                    <div class="application-decisions">
+                        @if ($application->status === 'pending' && !$application->reviewed_at)
+                            <form method="POST" action="{{ route('poster.applications.review', [$listing, $application]) }}"
+                                x-data="confirmForm" data-confirm="Mark this application as reviewed?" @submit="submit($event)">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="btn-ghost btn-sm">Mark reviewed</button>
+                            </form>
+                        @endif
+                        @foreach (['accepted' => 'Accept', 'rejected' => 'Reject', 'pending' => 'Move to pending'] as $nextStatus => $label)
+                            @if ($application->status !== $nextStatus)
+                                <form method="POST" action="{{ route('poster.applications.update', [$listing, $application]) }}"
+                                    x-data="confirmForm" data-confirm="{{ $nextStatus === 'accepted' ? 'Accept this application and issue a ticket?' : 'Change this application status? Any current ticket will be disabled.' }}"
+                                    @submit="submit($event)">
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="hidden" name="status" value="{{ $nextStatus }}">
+                                    <button type="submit" class="{{ $nextStatus === 'accepted' ? 'btn-primary' : ($nextStatus === 'rejected' ? 'btn-danger' : 'btn-ghost') }} btn-sm"
+                                        @disabled($nextStatus === 'accepted' && $availability['remaining'] === 0)>{{ $label }}</button>
+                                </form>
+                            @endif
+                        @endforeach
+                    </div>
+                    @if ($application->hasTicket())
+                        <p class="muted mt-4">Ticket {{ $application->ticket_code }} · Accepted {{ $application->accepted_at->format('M j, Y') }}</p>
+                    @endif
+                @endif
             </article>
         @empty
-            <x-empty-state title="No applications yet">When seekers apply through your form, their answers show up
-                here.</x-empty-state>
+            <x-empty-state title="No applications in this tab">Applications with this status will appear here.</x-empty-state>
         @endforelse
 
         {{ $applications->links('pagination.brand') }}

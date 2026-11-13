@@ -3,6 +3,20 @@
 
 @layer components {
 
+    .applicant-toolbar, .application-decisions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: .75rem;
+    }
+
+    .applicant-toolbar { justify-content: space-between; }
+    .application-decisions { margin-top: 1.5rem; }
+
+    @media (max-width: 639px) {
+        .application-decisions form, .application-decisions button { width: 100%; }
+    }
+
     /* Listing type picker (step 1) */
     .type-card {
         display: flex;
@@ -176,6 +190,7 @@
 
     /* Greyed-out small buttons (Up / Down at the ends of the list) */
     .btn-ghost:disabled,
+    .btn-primary:disabled,
     .btn-danger:disabled {
         opacity: .4;
         cursor: not-allowed;

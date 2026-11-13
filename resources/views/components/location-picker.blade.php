@@ -14,12 +14,12 @@
 <div x-data="locationPicker" class="grid gap-4 {{ $columns === 3 ? 'md:grid-cols-3' : 'sm:grid-cols-2' }}"
     data-region="{{ $region }}" data-province="{{ $province }}" data-city="{{ $city }}"
     data-provinces-url="{{ route('locations.provinces') }}" data-cities-url="{{ route('locations.cities') }}"
-    data-province-placeholder="{{ $provincePlaceholder }}" data-city-placeholder="{{ $cityPlaceholder }}">
+    data-province-placeholder="{{ __($provincePlaceholder) }}" data-city-placeholder="{{ __($cityPlaceholder) }}">
 
     <div>
-        <label for="region" class="label">{{ $regionLabel }}</label>
+        <label for="region" class="label">{{ __($regionLabel) }}</label>
         <select id="region" name="region" class="input" x-model="region" @change="regionChanged()">
-            <option value="">{{ $regionPlaceholder }}</option>
+            <option value="">{{ __($regionPlaceholder) }}</option>
             @foreach (\App\Support\Locations::regions() as $code => $name)
                 <option value="{{ $code }}">{{ $name }}</option>
             @endforeach
@@ -30,7 +30,7 @@
     </div>
 
     <div>
-        <label for="province" class="label">{{ $provinceLabel }}</label>
+        <label for="province" class="label">{{ __($provinceLabel) }}</label>
         <select id="province" name="province" class="input" :disabled="!hasProvinces"
             @change="provinceChanged($event.target.value)">
             <option value="" x-text="provinceText"></option>
@@ -44,7 +44,7 @@
     </div>
 
     <div class="{{ $columns === 3 ? '' : 'sm:col-span-2' }}">
-        <label for="city" class="label">{{ $cityLabel }}</label>
+        <label for="city" class="label">{{ __($cityLabel) }}</label>
         <select id="city" name="city" class="input" :disabled="!cityReady || cities.length === 0"
             @change="city = $event.target.value">
             <option value="" x-text="cityText"></option>
@@ -57,6 +57,5 @@
         @enderror
     </div>
 
-    <p class="muted col-span-full" x-show="failed" x-cloak>Could not load places. Check your connection and reload the
-        page.</p>
+    <p class="muted col-span-full" x-show="failed" x-cloak>{{ __('Could not load places. Check your connection and reload the page.') }}</p>
 </div>

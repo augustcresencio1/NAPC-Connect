@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" class="{{ !empty($uiPreferences['large_text']) ? 'large-text' : '' }} {{ !empty($uiPreferences['high_contrast']) ? 'high-contrast' : '' }}">
 
 <head>
     <meta charset="utf-8">
@@ -16,6 +16,7 @@
 </head>
 
 <body class="flex min-h-screen flex-col">
+    <a href="#main-content" class="sr-only focus:not-sr-only">{{ __('Skip to content') }}</a>
 
     {{-- Each page picks its own navbar: @section('navbar') <x-navbar.poster /> @endsection --}}
     @yield('navbar')
@@ -32,15 +33,14 @@
         </div>
     @endif
 
-    <div class="flex-1">
+    <main id="main-content" class="flex-1" tabindex="-1">
         @yield('content')
-    </div>
+    </main>
 
     <footer class="border-t-2 border-[var(--navy)]">
         <div class="container-page flex flex-col gap-3 py-8 md:flex-row md:items-center md:justify-between">
             <p class="font-bold text-[var(--navy)]">NAPC Connect</p>
-            <p class="muted">Built for SDG 1 (No Poverty), SDG 4 (Quality Education) and SDG 8 (Decent Work and
-                Economic Growth).</p>
+            <p class="muted">{{ __('Built for SDG 1 (No Poverty), SDG 4 (Quality Education) and SDG 8 (Decent Work and Economic Growth).') }}</p>
         </div>
     </footer>
 

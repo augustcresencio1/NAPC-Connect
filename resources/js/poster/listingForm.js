@@ -33,7 +33,9 @@ export default function (Alpine) {
 
         // Extra details
         get activeDetails() {
-            return this.detailFields[this.type] || [];
+            return (this.detailFields[this.type] || []).filter((field) =>
+                this.applyMode !== 'form' || !['slots', 'vacancies'].includes(field.key),
+            );
         },
 
         get chosenDetailFields() {

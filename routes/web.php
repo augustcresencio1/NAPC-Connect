@@ -1,31 +1,27 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
-// Shared
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\LocationController;
-
-// Auth
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\RegisterController;
-
-// Seeker
-use App\Http\Controllers\Seeker\ListingController as SeekerListingController;
-use App\Http\Controllers\Seeker\ProfileController;
-use App\Http\Controllers\Seeker\ApplicationController as SeekerApplicationController;
-
-// Organization / Poster
-use App\Http\Controllers\Poster\ApplicationController;
-use App\Http\Controllers\Poster\DashboardController as PosterDashboardController;
-use App\Http\Controllers\Poster\ListingController;
-
-// Admin
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ListingController as AdminListingController;
 use App\Http\Controllers\Admin\OrganizationController;
 use App\Http\Controllers\Admin\PosterApprovalController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\ListingController as AdminListingController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LocationController;
+use App\Http\Controllers\Poster\ApplicationController;
+use App\Http\Controllers\Poster\DashboardController as PosterDashboardController;
+use App\Http\Controllers\Poster\ListingController;
+use App\Http\Controllers\Seeker\ApplicationController as SeekerApplicationController;
+use App\Http\Controllers\Seeker\ChecklistController;
+use App\Http\Controllers\Seeker\ListingAvailabilityController;
+use App\Http\Controllers\Seeker\ListingController as SeekerListingController;
+use App\Http\Controllers\Seeker\PreferenceController;
+use App\Http\Controllers\Seeker\ProfileController;
+use App\Http\Controllers\Seeker\ReminderController;
+use App\Http\Controllers\Seeker\SavedListingController;
+use App\Http\Controllers\Seeker\TicketController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -100,6 +96,8 @@ Route::middleware('auth')->group(function () {
                 ->name('profile.update');
 
             // Browse and view listings -> seeker.listings.index, seeker.listings.show
+            Route::get('/listings/availability', ListingAvailabilityController::class)
+                ->name('listings.availability');
             Route::get('/listings', [SeekerListingController::class, 'index'])
                 ->name('listings.index');
             Route::get('/listings/{listing}', [SeekerListingController::class, 'show'])
@@ -114,6 +112,19 @@ Route::middleware('auth')->group(function () {
             // My applications -> seeker.applications.index
             Route::get('/applications', [SeekerApplicationController::class, 'index'])
                 ->name('applications.index');
+
+            Route::get('/applications/{application}/ticket', TicketController::class)
+                ->name('applications.ticket');
+
+            Route::patch('/applications/{application}/withdraw', [SeekerApplicationController::class, 'withdraw'])
+                ->name('applications.withdraw');
+            Route::get('/saved', [SavedListingController::class, 'index'])->name('saved.index');
+            Route::post('/listings/{listing}/save', [SavedListingController::class, 'store'])->name('saved.store');
+            Route::delete('/listings/{listing}/save', [SavedListingController::class, 'destroy'])->name('saved.destroy');
+            Route::put('/listings/{listing}/checklist', ChecklistController::class)->name('checklist.update');
+            Route::get('/reminders', [ReminderController::class, 'index'])->name('reminders.index');
+            Route::patch('/reminders/{listing}', [ReminderController::class, 'update'])->name('reminders.update');
+            Route::put('/preferences', PreferenceController::class)->name('preferences.update');
         });
 
     // ---------------------------------------------------------------
@@ -155,6 +166,13 @@ Route::middleware('auth')->group(function () {
                     '/listings/{listing}/applications',
                     [ApplicationController::class, 'index']
                 )->name('listings.applications');
+
+                Route::patch('/listings/{listing}/applications/{application}', [ApplicationController::class, 'update'])
+                    ->name('applications.update');
+                Route::get('/listings/{listing}/applications/accepted.csv', [ApplicationController::class, 'export'])
+                    ->name('applications.export');
+                Route::patch('/listings/{listing}/applications/{application}/review', [ApplicationController::class, 'review'])
+                    ->name('applications.review');
             });
         });
 
