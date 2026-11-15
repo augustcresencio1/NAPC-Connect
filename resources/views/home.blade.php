@@ -16,7 +16,7 @@
         <div class="container-page grid items-center gap-12 py-14 lg:grid-cols-2 lg:py-20">
 
             <div class="rise">
-                <h1 class="h1">Ayuda, scholarships, jobs and training. Stop searching page by page.</h1>
+                <h1 class="h1">Welcome to NAPC Connect - Version 2.0!</h1>
                 <p class="lead mt-5">
                     Programs from DSWD, CHED, TESDA, schools and your LGU are posted all over Facebook and agency sites.
                     NAPC Connect puts the verified ones in one place and shows you the ones that fit you.
