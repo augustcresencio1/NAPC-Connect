@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Support\Locations;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Support\Locations;
 
 class SeekerProfile extends Model
 {
@@ -25,7 +25,7 @@ class SeekerProfile extends Model
     {
         return [
             'birthdate' => 'date',
-            'sectors'   => 'array',
+            'sectors' => 'array',
         ];
     }
 
@@ -53,7 +53,7 @@ class SeekerProfile extends Model
             array_push($fields, 'school_type', 'course');
         }
 
-        $filled = collect($fields)->filter(fn($field) => filled($this->{$field}))->count();
+        $filled = collect($fields)->filter(fn ($field) => filled($this->{$field}))->count();
 
         return (int) round($filled / count($fields) * 100);
     }
@@ -68,8 +68,8 @@ class SeekerProfile extends Model
 
         $yearLevel = match (true) {
             $this->year_level === 'none' => 'Not currently in school',
-            filled($this->year_level)    => config("napc.year_levels.{$this->year_level}"),
-            default                      => null,
+            filled($this->year_level) => config("napc.year_levels.{$this->year_level}"),
+            default => null,
         };
 
         $school = collect([
@@ -78,19 +78,19 @@ class SeekerProfile extends Model
         ])->filter()->implode(', ');
 
         $sectors = collect($this->sectors ?? [])
-            ->map(fn($key) => config("napc.sectors.{$key}", $key))
+            ->map(fn ($key) => config("napc.sectors.{$key}", $key))
             ->implode(', ');
 
         return array_filter([
-            'Age'              => $this->age() !== null ? $this->age() . ' years old' : null,
-            'Location'         => $location,
-            'Year level'       => $yearLevel,
-            'School'           => $school,
-            'Course'           => $this->course,
-            'Sector or group'  => $sectors,
+            'Age' => $this->age() !== null ? $this->age().' years old' : null,
+            'Location' => $location,
+            'Year level' => $yearLevel,
+            'School' => $school,
+            'Course' => $this->course,
+            'Sector or group' => $sectors,
             'Household income' => $withIncome && $this->income_monthly !== null
-                ? 'PHP ' . number_format($this->income_monthly) . ' per month'
+                ? 'PHP '.number_format($this->income_monthly).' per month'
                 : null,
-        ], fn($value) => filled($value));
+        ], fn ($value) => filled($value));
     }
 }

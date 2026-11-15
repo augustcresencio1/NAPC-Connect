@@ -25,33 +25,33 @@ class RegisterController extends Controller
         $nameRule = "regex:/^[\pL\s.'-]+$/u";
 
         $data = $request->validate([
-            'role'              => ['required', Rule::in(['seeker', 'poster'])], // admin can never be chosen here
-            'first_name'        => ['required', 'string', 'max:60', $nameRule],
-            'middle_name'       => ['nullable', 'string', 'max:60', $nameRule],
-            'last_name'         => ['required', 'string', 'max:60', $nameRule],
-            'email'             => ['required', 'email', 'lowercase', 'max:255', 'unique:users,email'],
-            'password'          => ['required', 'confirmed', Password::min(8)],
+            'role' => ['required', Rule::in(['seeker', 'poster'])], // admin can never be chosen here
+            'first_name' => ['required', 'string', 'max:60', $nameRule],
+            'middle_name' => ['nullable', 'string', 'max:60', $nameRule],
+            'last_name' => ['required', 'string', 'max:60', $nameRule],
+            'email' => ['required', 'email', 'lowercase', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'confirmed', Password::min(8)],
 
-            'organization'      => ['required_if:role,poster', 'nullable', 'string', 'max:150'],
+            'organization' => ['required_if:role,poster', 'nullable', 'string', 'max:150'],
             'organization_type' => ['required_if:role,poster', 'nullable', Rule::in(['school', 'lgu', 'agency', 'company', 'ngo'])],
-            'position'          => ['required_if:role,poster', 'nullable', 'string', 'max:120'],
-            'proof_url'         => ['required_if:role,poster', 'nullable', 'url', 'max:500'],
+            'position' => ['required_if:role,poster', 'nullable', 'string', 'max:120'],
+            'proof_url' => ['required_if:role,poster', 'nullable', 'url', 'max:500'],
         ]);
 
         $isPoster = $data['role'] === 'poster';
 
         $user = User::create([
-            'first_name'        => trim($data['first_name']),
-            'middle_name'       => filled($data['middle_name'] ?? null) ? trim($data['middle_name']) : null,
-            'last_name'         => trim($data['last_name']),
-            'email'             => $data['email'],
-            'password'          => $data['password'],
-            'role'              => $data['role'],
-            'poster_status'     => $isPoster ? 'pending' : null,
-            'organization'      => $isPoster ? $data['organization'] : null,
+            'first_name' => trim($data['first_name']),
+            'middle_name' => filled($data['middle_name'] ?? null) ? trim($data['middle_name']) : null,
+            'last_name' => trim($data['last_name']),
+            'email' => $data['email'],
+            'password' => $data['password'],
+            'role' => $data['role'],
+            'poster_status' => $isPoster ? 'pending' : null,
+            'organization' => $isPoster ? $data['organization'] : null,
             'organization_type' => $isPoster ? $data['organization_type'] : null,
-            'position'          => $isPoster ? $data['position'] : null,
-            'proof_url'         => $isPoster ? $data['proof_url'] : null,
+            'position' => $isPoster ? $data['position'] : null,
+            'proof_url' => $isPoster ? $data['proof_url'] : null,
         ]);
 
         Auth::login($user);
