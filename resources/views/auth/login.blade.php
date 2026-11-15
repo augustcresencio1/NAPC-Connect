@@ -2,7 +2,7 @@
 @section('title', 'Log in')
 
 @section('content')
-    <h1 class="h2">Welcome back</h1>
+    <h1 class="h2">Welcome back to NAPC Connect</h1>
     <p class="muted mt-2 text-base">Log in to see programs picked for you.</p>
 
     @if (session('status'))
