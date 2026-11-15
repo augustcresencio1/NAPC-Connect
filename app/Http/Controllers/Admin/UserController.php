@@ -21,7 +21,7 @@ class UserController extends Controller
         $users = User::query()
             ->when($role !== 'all', fn ($q) => $q->where('role', $role))
             ->when($search !== '', function ($q) use ($search) {
-                $like = '%' . addcslashes($search, '%_\\') . '%';
+                $like = '%'.addcslashes($search, '%_\\').'%';
 
                 $q->where(fn ($w) => $w
                     ->where('first_name', 'ilike', $like)
@@ -41,7 +41,7 @@ class UserController extends Controller
         $counts = [
             'seeker' => (int) ($byRole['seeker'] ?? 0),
             'poster' => (int) ($byRole['poster'] ?? 0),
-            'admin'  => (int) ($byRole['admin'] ?? 0),
+            'admin' => (int) ($byRole['admin'] ?? 0),
         ];
         $counts['all'] = array_sum($counts);
 

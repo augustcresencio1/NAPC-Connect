@@ -22,9 +22,9 @@ class DashboardController extends Controller
 
         return view('admin.home', [
             'counts' => [
-                'seekers'  => $count('seeker'),
+                'seekers' => $count('seeker'),
                 'approved' => $count('poster', 'approved'),
-                'pending'  => $count('poster', 'pending'),
+                'pending' => $count('poster', 'pending'),
                 'rejected' => $count('poster', 'rejected'),
             ],
             // The oldest requests first, capped so the dashboard stays short

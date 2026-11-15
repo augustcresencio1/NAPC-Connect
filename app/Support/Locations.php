@@ -49,9 +49,9 @@ class Locations
 
         if ($map === null) {
             $map = [
-                'regions'   => Region::orderBy('code')->get()->mapWithKeys(fn(Region $r) => [$r->code => $r->label()])->all(),
+                'regions' => Region::orderBy('code')->get()->mapWithKeys(fn (Region $r) => [$r->code => $r->label()])->all(),
                 'provinces' => Province::pluck('name', 'code')->all(),
-                'cities'    => City::pluck('name', 'code')->all(),
+                'cities' => City::pluck('name', 'code')->all(),
             ];
 
             if ($map['regions'] !== []) {

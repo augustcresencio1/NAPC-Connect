@@ -18,10 +18,10 @@ class DashboardController extends Controller
             ->pluck('total', 'status');
 
         $counts = [
-            'published'    => (int) ($byStatus['published'] ?? 0),
-            'draft'        => (int) ($byStatus['draft'] ?? 0),
-            'closed'       => (int) ($byStatus['closed'] ?? 0),
-            'applications' => Application::whereHas('listing', fn($q) => $q->where('user_id', $user->id))->count(),
+            'published' => (int) ($byStatus['published'] ?? 0),
+            'draft' => (int) ($byStatus['draft'] ?? 0),
+            'closed' => (int) ($byStatus['closed'] ?? 0),
+            'applications' => Application::whereHas('listing', fn ($q) => $q->where('user_id', $user->id))->count(),
         ];
 
         $recent = $user->listings()

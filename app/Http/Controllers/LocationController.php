@@ -38,8 +38,8 @@ class LocationController extends Controller
         }
 
         $items = City::where('region_code', $region)
-            ->when($hasProvinces, fn($q) => $q->where(
-                fn($w) => $w->where('province_code', $province)->orWhereNull('province_code')
+            ->when($hasProvinces, fn ($q) => $q->where(
+                fn ($w) => $w->where('province_code', $province)->orWhereNull('province_code')
             ))
             ->orderBy('name')
             ->get(['code', 'name']);

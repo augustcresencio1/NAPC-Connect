@@ -20,16 +20,16 @@ class ListingController extends Controller
             ->where('status', '!=', 'draft') // drafts are private to the organization
             ->with('user:id,organization,first_name,last_name,email')
             ->withCount('applications')
-            ->when($filter === 'published', fn($q) => $q->where('status', 'published'))
-            ->when($filter === 'closed', fn($q) => $q->where('status', 'closed')->whereNull('taken_down_at'))
-            ->when($filter === 'removed', fn($q) => $q->whereNotNull('taken_down_at'))
-            ->when($type !== 'all', fn($q) => $q->where('type', $type))
+            ->when($filter === 'published', fn ($q) => $q->where('status', 'published'))
+            ->when($filter === 'closed', fn ($q) => $q->where('status', 'closed')->whereNull('taken_down_at'))
+            ->when($filter === 'removed', fn ($q) => $q->whereNotNull('taken_down_at'))
+            ->when($type !== 'all', fn ($q) => $q->where('type', $type))
             ->when($search !== '', function ($q) use ($search) {
-                $like = '%' . addcslashes($search, '%_\\') . '%';
+                $like = '%'.addcslashes($search, '%_\\').'%';
 
-                $q->where(fn($w) => $w
+                $q->where(fn ($w) => $w
                     ->where('title', 'ilike', $like)
-                    ->orWhereHas('user', fn($u) => $u->where('organization', 'ilike', $like)));
+                    ->orWhereHas('user', fn ($u) => $u->where('organization', 'ilike', $like)));
             })
             ->latest('updated_at')
             ->paginate(10)
@@ -45,10 +45,10 @@ class ListingController extends Controller
             ->first();
 
         $counts = [
-            'all'       => (int) $row->total,
+            'all' => (int) $row->total,
             'published' => (int) $row->published,
-            'closed'    => (int) $row->closed,
-            'removed'   => (int) $row->removed,
+            'closed' => (int) $row->closed,
+            'removed' => (int) $row->removed,
         ];
 
         return view('admin.listings.index', compact('listings', 'counts', 'filter', 'type', 'search'));
@@ -64,8 +64,8 @@ class ListingController extends Controller
         ]);
 
         $listing->forceFill([
-            'status'          => 'closed',
-            'taken_down_at'   => now(),
+            'status' => 'closed',
+            'taken_down_at' => now(),
             'takedown_reason' => trim($data['reason']),
         ])->save();
 
@@ -80,7 +80,7 @@ class ListingController extends Controller
         }
 
         $listing->forceFill([
-            'taken_down_at'   => null,
+            'taken_down_at' => null,
             'takedown_reason' => null,
         ])->save();
 

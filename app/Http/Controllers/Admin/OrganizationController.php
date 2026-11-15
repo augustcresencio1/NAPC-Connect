@@ -23,7 +23,7 @@ class OrganizationController extends Controller
             ->when($status !== 'all', fn ($q) => $q->where('poster_status', $status))
             ->when($search !== '', function ($q) use ($search) {
                 // Escape % and _ so they are searched literally
-                $like = '%' . addcslashes($search, '%_\\') . '%';
+                $like = '%'.addcslashes($search, '%_\\').'%';
 
                 $q->where(fn ($w) => $w
                     ->where('organization', 'ilike', $like)
@@ -42,7 +42,7 @@ class OrganizationController extends Controller
             ->pluck('total', 'poster_status');
 
         $counts = [
-            'pending'  => (int) ($byStatus['pending'] ?? 0),
+            'pending' => (int) ($byStatus['pending'] ?? 0),
             'approved' => (int) ($byStatus['approved'] ?? 0),
             'rejected' => (int) ($byStatus['rejected'] ?? 0),
         ];

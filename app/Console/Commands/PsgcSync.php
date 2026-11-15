@@ -27,7 +27,7 @@ class PsgcSync extends Command
             $this->line('Downloading cities and municipalities...');
             $cities = $this->fetch('cities-municipalities');
         } catch (\Throwable $e) {
-            $this->error('Could not download the data: ' . $e->getMessage());
+            $this->error('Could not download the data: '.$e->getMessage());
 
             if (str_contains($e->getMessage(), 'cURL error 60')) {
                 $this->warn('Your PHP has no SSL certificate bundle. Run again with --insecure, or set curl.cainfo in php.ini.');
@@ -37,30 +37,30 @@ class PsgcSync extends Command
         }
 
         $regionRows = collect($regions)
-            ->filter(fn($r) => ! empty($r['code']) && ! empty($r['name']))
-            ->map(fn($r) => [
-                'code'       => (string) $r['code'],
-                'name'       => (string) $r['name'],
+            ->filter(fn ($r) => ! empty($r['code']) && ! empty($r['name']))
+            ->map(fn ($r) => [
+                'code' => (string) $r['code'],
+                'name' => (string) $r['name'],
                 'short_name' => ($r['regionName'] ?? '') !== '' ? (string) $r['regionName'] : null,
             ])->values();
 
         $provinceRows = collect($provinces)
-            ->filter(fn($p) => ! empty($p['code']) && ! empty($p['name']) && ! empty($p['regionCode']))
-            ->map(fn($p) => [
-                'code'        => (string) $p['code'],
+            ->filter(fn ($p) => ! empty($p['code']) && ! empty($p['name']) && ! empty($p['regionCode']))
+            ->map(fn ($p) => [
+                'code' => (string) $p['code'],
                 'region_code' => (string) $p['regionCode'],
-                'name'        => (string) $p['name'],
+                'name' => (string) $p['name'],
             ])->values();
 
         $cityRows = collect($cities)
-            ->filter(fn($c) => ! empty($c['code']) && ! empty($c['name']) && ! empty($c['regionCode']))
-            ->map(fn($c) => [
-                'code'          => (string) $c['code'],
-                'region_code'   => (string) $c['regionCode'],
+            ->filter(fn ($c) => ! empty($c['code']) && ! empty($c['name']) && ! empty($c['regionCode']))
+            ->map(fn ($c) => [
+                'code' => (string) $c['code'],
+                'region_code' => (string) $c['regionCode'],
                 // NCR cities and independent cities come with "false" instead of a province code
                 'province_code' => is_string($c['provinceCode'] ?? false) && $c['provinceCode'] !== '' ? $c['provinceCode'] : null,
-                'name'          => (string) $c['name'],
-                'is_city'       => (bool) ($c['isCity'] ?? false),
+                'name' => (string) $c['name'],
+                'is_city' => (bool) ($c['isCity'] ?? false),
             ])->values();
 
         // Stop before touching anything if the data looks wrong
@@ -88,8 +88,8 @@ class PsgcSync extends Command
         $data = Http::timeout(60)
             ->retry(3, 1000)
             ->acceptJson()
-            ->when($this->option('insecure'), fn($http) => $http->withoutVerifying())
-            ->get(rtrim($this->option('base'), '/') . "/{$file}.json")
+            ->when($this->option('insecure'), fn ($http) => $http->withoutVerifying())
+            ->get(rtrim($this->option('base'), '/')."/{$file}.json")
             ->throw()
             ->json();
 
@@ -103,7 +103,7 @@ class PsgcSync extends Command
     private function upsert(string $table, $rows, array $update): void
     {
         $rows->chunk(500)->each(
-            fn($chunk) => DB::table($table)->upsert($chunk->values()->all(), ['code'], $update)
+            fn ($chunk) => DB::table($table)->upsert($chunk->values()->all(), ['code'], $update)
         );
     }
 }
